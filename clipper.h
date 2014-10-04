@@ -10,12 +10,82 @@
 #define _CLIPPER_H_
 
 #include "simpleCanvas.h"
+#include <vector>
+
+enum BoundryType
+{
+	East,
+	North,
+	South,
+	West
+};
+
+/**
+*Vertex Struct
+*/
+struct Vertex
+{
+	float x, y;
+};
+/*
+*A line
+*/
+struct Line
+{
+
+	bool IsEdge;
+	BoundryType BoundryType;
+	Vertex* Start;
+	Vertex* End;
+
+	Line(Vertex * Start, Vertex* End, bool IsEdge) : IsEdge(IsEdge), Start(Start), End(End)
+	{
+		if (End->x > Start->x)
+		{
+			BoundryType = South;
+		}
+		else if (End->x < Start->x)         //Changed from the example
+		{
+			BoundryType = North;
+		}
+		else if (End->y > Start->y)
+		{
+			BoundryType = East;
+		}
+		else if (End->y < Start->y)
+		{
+			BoundryType = West;
+		}
+		else
+		{
+			throw std::invalid_argument("Start and end Vertexes are the same!");
+		}
+	}
+};
 
 /**
  * Simple class that performs clipping
  *
  */
 class clipper {
+
+private:
+	void ClipSide(std::vector<Vertex>* outputVertexes, std::vector<Vertex> inputVertacies, Line* Edge);
+	/*
+	*Creates a Clipping window
+	*Index 0 = Left
+	*Index 1 = Top
+	*Index 2 = Right
+	*Index 3 = Bottom
+	*/
+	std::vector<Line*>* GenerateClipWindow(Vertex* BottomLeft, Vertex* TopRight);
+
+	/**
+	* Determines If a given vertex is inside of the given clipboundry
+	*/
+	bool Inside(Vertex testVertex, Line ClipBoundry);
+
+
 public:
 
     /**

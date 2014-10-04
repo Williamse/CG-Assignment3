@@ -13,6 +13,7 @@
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
+
 /**
  * Simple canvas class that allows for pixel-by-pixel rendering.
  *
