@@ -19,7 +19,9 @@
  */
 clipper::clipper ()
 {
+	
 }
+
 
 /*
 *Creates a Clipping window
@@ -30,6 +32,7 @@ clipper::clipper ()
 */
 std::vector<Line*>* clipper::GenerateClipWindow(Vertex* BottomLeft, Vertex* TopRight)
 {
+	
 	std::vector<Line*>* ClipWindow = new std::vector<Line*>();
 
 	//Generate missing vertexes
@@ -40,6 +43,9 @@ std::vector<Line*>* clipper::GenerateClipWindow(Vertex* BottomLeft, Vertex* TopR
 	Vertex* BottomRight = new Vertex();
 	BottomRight->x = TopRight->x;
 	BottomRight->y = BottomLeft->y;
+
+	dynamicVertexes->push_back(TopLeft);
+	dynamicVertexes->push_back(BottomRight);
 
 	//Genereate Line
 	Line* LeftLine = new Line(TopLeft,BottomLeft, true);
@@ -122,6 +128,13 @@ int clipper::clipPolygon(int in, const float inx[], const float iny[],
                 float outx[], float outy[],
 		float x0, float y0, float x1, float y1)
 {
+	//Holds all dynamic memory here
+	this->dynamicVertexes = new std::vector<Vertex*>();
+
+	std::vector<Line*>* ClippingWindow;
+	std::vector<Vertex> vertacies = std::vector<Vertex>();
+	std::vector<Vertex> outputVertacies = std::vector<Vertex>();
+
 	//Generate bottmleft and topright vertacies
 	Vertex BottomLeft = Vertex();
 	Vertex TopRight = Vertex();
@@ -131,12 +144,6 @@ int clipper::clipPolygon(int in, const float inx[], const float iny[],
 	TopRight.x = x1;
 	TopRight.y = y1;
 
-	std::vector<Line*>* ClippingWindow;
-
-	//DELETE ALL OF MY CONTENTS AFTER FUNCTION COMPLETES
-	std::vector<Vertex> vertacies = std::vector<Vertex>();
-	std::vector<Vertex> outputVertacies = std::vector<Vertex>();
-
 	//First lets construct the vertacies based on what we have been passed
 	for (int c = 0; c < in; c++)
 	{
@@ -144,50 +151,167 @@ int clipper::clipPolygon(int in, const float inx[], const float iny[],
 		Vertex *temp = new Vertex();
 		temp->x = inx[c];
 		temp->y = iny[c];
-
+		
 		//Push Vertex
 		vertacies.push_back(*temp);
-	}
+		dynamicVertexes->push_back(temp);
 
+	}
+	
 	
 	//Now lets generate all of the clipping window edges
 	ClippingWindow = GenerateClipWindow(&BottomLeft, &TopRight);
 
+	//Lets clip the polygon
 	//Left
 	ClipSide(&outputVertacies, vertacies, ClippingWindow->at(0));
+	SwapOutputInput(&vertacies, &outputVertacies);
+	outputVertacies.clear();
 	//Top
 	ClipSide(&outputVertacies, vertacies, ClippingWindow->at(1));
+	SwapOutputInput(&vertacies, &outputVertacies);
+	outputVertacies.clear();
 	//Right
 	ClipSide(&outputVertacies, vertacies, ClippingWindow->at(2));
+	SwapOutputInput(&vertacies, &outputVertacies);
+	outputVertacies.clear();
 	//Bottom
 	ClipSide(&outputVertacies, vertacies, ClippingWindow->at(3));
 
-	Vertex* test = new Vertex();
-	test->x = 3.0;
-	test->y = 2.0;
+	//Add the elements to the output vertacies
+	for (int z = 0; z < outputVertacies.size(); z++)
+	{
+		outx[z] = outputVertacies.at(z).x;
+		outy[z] = outputVertacies.at(z).y;
+	}
 
-	Vertex* test2 = new Vertex();
-	test2->x = 6.0;
-	test2->y = 2.0;
+	//Take care of the crazy amount of dynamic memory I used
+	for (int d = 0; d < dynamicVertexes->size(); d++)
+	{
+		delete dynamicVertexes->at(d);
+		dynamicVertexes->at(d) = NULL;
+	}
+	delete dynamicVertexes;
+	dynamicVertexes = NULL;
+	for (int j = 0; j < ClippingWindow->size(); j++)
+	{
+		delete ClippingWindow->at(j);
+		ClippingWindow->at(j) = NULL;
+	}
+	delete ClippingWindow;
+	ClippingWindow = NULL;
 
-	Line* testL = new Line(test, test2, true);
-	testL->Start = test;
-	testL->End  = test;
-
-	Vertex* third = new Vertex();
-	third->x = 4.0;
-	third->y = 1.0;
-	
-//	bool tInside = this->Inside(*third, *testL);
-	std::cout << Inside(*third, *testL) << std::endl;
-
-    return 0;  // should return number of vertices in clipped poly.
+	return outputVertacies.size();  // should return number of vertices in clipped poly.
 }
 
-//Clips a set of vertexes HEY MANNY TOMMMOROW  http://www.cs.rit.edu/~icss571/clipTrans/PolyClipBack.html  start at this page and implement the SutherlandHodmanPolygoclip thingy
-void ClipSide(std::vector<Vertex>* outputVertexes, std::vector<Vertex> inputVertacies, Line* Edge)
+/*
+* Adds the given vertex to the given Vertex Array
+*/
+void clipper::addVertexOutput(Vertex* newVertex, std::vector<Vertex>* outVertexArr)
 {
+	outVertexArr->push_back(*newVertex);
+}
 
+/*
+* Swap the input and output vectors unless we are dealing with a line
+*/
+void clipper::SwapOutputInput(std::vector<Vertex>* input, std::vector<Vertex>* output)
+{
+	int input_length = input->size();
+	int output_length = output->size();
+
+	//Deal with lines
+	if (input_length == 2 && output_length == 3)
+	{
+
+		input->at(0).x = output->at(0).x;
+		input->at(0).y = output->at(0).y;
+		if (output->at(0).x == output->at(1).x) 
+		{
+			input->at(1).x = output->at(2).x;
+			input->at(1).y = output->at(2).y;
+		}
+		else                    
+		{
+			input->at(1).x = output->at(1).x;
+			input->at(1).y = output->at(2).y;
+		}
+	}
+	else
+	{
+		input->swap(*output);
+	}
+}
+
+//Intersection
+void clipper::Intersect(Line testLine, Line ClipBoundry,Vertex  *intersectPt)
+{
+	//Horizontal Edge
+	if (ClipBoundry.Start->y == ClipBoundry.End->y)     
+	{
+		intersectPt->y = ClipBoundry.Start->y;
+		intersectPt->x = testLine.Start->x + (ClipBoundry.Start->y - testLine.Start->y) *
+			(testLine.End->x - testLine.Start->x)/(testLine.End->y -testLine.Start->y); // Vertical
+	}
+	//Vertical Edge
+	else {
+		intersectPt->x = ClipBoundry.Start->x;
+		intersectPt->y = testLine.Start->y + (ClipBoundry.Start->x -testLine.Start->x)*
+			(testLine.End->y - testLine.Start->y) / (testLine.End->x - testLine.Start->x);
+	}
+}
+
+
+
+//Clips a set of vertexes 
+void clipper::ClipSide(std::vector<Vertex>* outputVertexes, std::vector<Vertex> inputVertacies, Line* Edge)
+{
+	//Each interation update the start vertex, end, and intersection of the given bvetacie and the edge
+	Vertex start, end, intersection;
+
+	//Get the last vertacie
+	if (inputVertacies.size() != 0)
+	{
+		start = inputVertacies.at(inputVertacies.size() - 1);
+	}
+
+	//Loop through all of the input vertacies
+	for (int x = 0; x < inputVertacies.size(); x++)
+	{
+		end = inputVertacies.at(x);
+
+		//If the start point is inside
+		if (Inside(end, *Edge))
+		{
+			if (Inside(start, *Edge))
+			{
+				addVertexOutput(&end, outputVertexes);
+				//Output p to the output array
+			}
+			else
+			{
+				Line *tLine = new Line(&start, &end, true);
+				//Create an intersection of S,P, and the clip boundry
+				Intersect(*tLine, *Edge, &intersection);
+				delete tLine;
+				addVertexOutput(&intersection, outputVertexes);
+				addVertexOutput(&end, outputVertexes);
+			}
+		}
+		else
+		{
+			if (Inside(start, *Edge))
+			{
+				Line *tLine = new Line(&start, &end, true);
+				//Create an intersection of S,P, and the clip boundry
+				Intersect(*tLine, *Edge, &intersection);
+				delete tLine;
+				//Create an intersecion of S,P, and clip boundry
+				addVertexOutput(&intersection, outputVertexes);
+			}
+		}
+		start = end;
+	}
 }
 //Create vertex Start
 

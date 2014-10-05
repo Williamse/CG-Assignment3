@@ -80,13 +80,24 @@ private:
 	*/
 	std::vector<Line*>* GenerateClipWindow(Vertex* BottomLeft, Vertex* TopRight);
 
+
 	/**
 	* Determines If a given vertex is inside of the given clipboundry
 	*/
 	bool Inside(Vertex testVertex, Line ClipBoundry);
 
+	//Intersection point is outptu tointersectPt
+	void Intersect(Line testLine, Line ClipBoundry, Vertex  *intersectPt);
 
+
+	void SwapOutputInput(std::vector<Vertex>* input, std::vector<Vertex>* output);
+
+	void addVertexOutput(Vertex* newVertex, std::vector<Vertex>* outVertexArr);
+
+	//Keeps tracks of pointers to any Vertexes
+	std::vector<Vertex*>* dynamicVertexes;
 public:
+
 
     /**
      * Constructor
