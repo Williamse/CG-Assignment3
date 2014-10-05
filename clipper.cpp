@@ -77,19 +77,19 @@ std::vector<EnumTypes::Line*>* clipper::GenerateClipWindow(EnumTypes::Vertex* Bo
 */
 bool clipper::Inside(EnumTypes::Vertex testVertex, EnumTypes::Line ClipBoundry)
 {
-	if (ClipBoundry.BoundryType == EnumTypes::South)
+	if (ClipBoundry.BType == EnumTypes::South)
 	{
 		if (testVertex.y >= ClipBoundry.Start->y) return true;
 	}
-	if (ClipBoundry.BoundryType == EnumTypes::North)
+	if (ClipBoundry.BType == EnumTypes::North)
 	{
 		if (testVertex.y <= ClipBoundry.Start->y) return true;
 	}
-	if (ClipBoundry.BoundryType == EnumTypes::East)
+	if (ClipBoundry.BType == EnumTypes::East)
 	{
 		if (testVertex.x <= ClipBoundry.End->x) return true;
 	}
-	if (ClipBoundry.BoundryType == EnumTypes::West)
+	if (ClipBoundry.BType == EnumTypes::West)
 	{
 		if (testVertex.x >= ClipBoundry.End->x) return true;
 	}

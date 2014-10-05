@@ -37,7 +37,7 @@ namespace EnumTypes
 	{
 
 		bool IsEdge;
-		BoundryType BoundryType;
+		BoundryType BType;
 		Vertex* Start;
 		Vertex* End;
 
@@ -45,19 +45,19 @@ namespace EnumTypes
 		{
 			if (End->x > Start->x)
 			{
-				BoundryType = South;
+				BType = South;
 			}
 			else if (End->x < Start->x)         //Changed from the example
 			{
-				BoundryType = North;
+				BType = North;
 			}
 			else if (End->y > Start->y)
 			{
-				BoundryType = East;
+				BType = East;
 			}
 			else if (End->y < Start->y)
 			{
-				BoundryType = West;
+				BType = West;
 			}
 
 		}
