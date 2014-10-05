@@ -5,6 +5,7 @@
 //  Created by Joe Geigel on 11/30/11.
 //  Copyright 2011 Rochester Institute of Technology. All rights reserved.
 //
+//Modified by Emanuel williams for CG
 
 #ifndef _CLIPPER_H_
 #define _CLIPPER_H_

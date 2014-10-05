@@ -5,6 +5,7 @@
 //  Created by Joe Geigel on 11/30/11.
 //  Copyright 2011 Rochester Institute of Technology. All rights reserved.
 //
+//Modified By Emanuel Williams - For Computer graphics 
 
 #include "clipper.h"
 #include <iostream>
@@ -25,10 +26,14 @@ clipper::clipper ()
 
 /*
 *Creates a Clipping window
-*Index 0 = Left
-*Index 1 = Top
-*Index 2 = Right
-*Index 3 = Bottom
+*Input :
+*	BottomLeft = Vertex of the bottom left part of the window
+*	TopRight = Vertex of the top Right portion
+*Outputs a vector where:
+*	Index 0 = Left
+*	Index 1 = Top
+*	Index 2 = Right
+*	Index 3 = Bottom
 */
 std::vector<Line*>* clipper::GenerateClipWindow(Vertex* BottomLeft, Vertex* TopRight)
 {
@@ -63,15 +68,7 @@ std::vector<Line*>* clipper::GenerateClipWindow(Vertex* BottomLeft, Vertex* TopR
 }
 
 /**
-* clipPolygon
 *
-* Clip the polygon with vertex count in and vertices inx/iny
-* against the rectangular clipping region specified by lower-left corner
-* (x0,y0) and upper-right corner (x1,y1). The resulting vertices are
-* placed in outx/outy.
-*
-* The routine should return the vertex count of the polygon
-* resulting from the clipping.
 *
 * @param testVertex The vertex being tested
 * @param ClipBoundry - The line to use to determine if
@@ -220,7 +217,7 @@ void clipper::SwapOutputInput(std::vector<Vertex>* input, std::vector<Vertex>* o
 	int input_length = input->size();
 	int output_length = output->size();
 
-	//Deal with lines
+	//In case of a line
 	if (input_length == 2 && output_length == 3)
 	{
 
@@ -237,13 +234,20 @@ void clipper::SwapOutputInput(std::vector<Vertex>* input, std::vector<Vertex>* o
 			input->at(1).y = output->at(2).y;
 		}
 	}
+	//Simply swap the vectors
 	else
 	{
 		input->swap(*output);
 	}
 }
 
-//Intersection
+/*
+* Returns the intersection point of a line 
+* and another line.
+* testLine - The line that intersects another
+* ClipBoundry - The line that intersects the test line
+  intersectPt - Pointer where the result of the intersection should go.
+*/
 void clipper::Intersect(Line testLine, Line ClipBoundry,Vertex  *intersectPt)
 {
 	//Horizontal Edge
@@ -263,7 +267,12 @@ void clipper::Intersect(Line testLine, Line ClipBoundry,Vertex  *intersectPt)
 
 
 
-//Clips a set of vertexes 
+/*
+* Implementation of the clipping algortihim
+* outputVertexes - The vertexes that will be output
+  inputVertacies - The vertacies passed into the algorithim
+  Edge - The edge we are clipping on
+*/
 void clipper::ClipSide(std::vector<Vertex>* outputVertexes, std::vector<Vertex> inputVertacies, Line* Edge)
 {
 	//Each interation update the start vertex, end, and intersection of the given bvetacie and the edge
@@ -286,12 +295,10 @@ void clipper::ClipSide(std::vector<Vertex>* outputVertexes, std::vector<Vertex> 
 			if (Inside(start, *Edge))
 			{
 				addVertexOutput(&end, outputVertexes);
-				//Output p to the output array
 			}
 			else
 			{
 				Line *tLine = new Line(&start, &end, true);
-				//Create an intersection of S,P, and the clip boundry
 				Intersect(*tLine, *Edge, &intersection);
 				delete tLine;
 				addVertexOutput(&intersection, outputVertexes);
@@ -303,18 +310,11 @@ void clipper::ClipSide(std::vector<Vertex>* outputVertexes, std::vector<Vertex> 
 			if (Inside(start, *Edge))
 			{
 				Line *tLine = new Line(&start, &end, true);
-				//Create an intersection of S,P, and the clip boundry
 				Intersect(*tLine, *Edge, &intersection);
 				delete tLine;
-				//Create an intersecion of S,P, and clip boundry
 				addVertexOutput(&intersection, outputVertexes);
 			}
 		}
 		start = end;
 	}
 }
-//Create vertex Start
-
-//Create vertex End
-
-//Create line pass in vertex start and end

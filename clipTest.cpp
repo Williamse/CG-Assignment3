@@ -6,6 +6,7 @@
 //  Copyright 2011 Rochester Institute of Technology. All rights reserved.
 //
 
+
 #include <SFML/Graphics.hpp>
 #include "extendedCanvas.h"
 #include "clipper.h"
