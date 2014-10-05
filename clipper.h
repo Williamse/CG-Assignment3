@@ -57,10 +57,7 @@ struct Line
 		{
 			BoundryType = West;
 		}
-		else
-		{
-			throw std::invalid_argument("Start and end Vertexes are the same!");
-		}
+		
 	}
 };
 
