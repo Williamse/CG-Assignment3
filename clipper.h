@@ -12,55 +12,57 @@
 
 #include "simpleCanvas.h"
 #include <vector>
-
-enum BoundryType
-{
-	East,
-	North,
-	South,
-	West
-};
-
-/**
-*Vertex Struct
-*/
-struct Vertex
-{
-	float x, y;
-};
-/*
-*A line
-*/
-struct Line
+namespace EnumTypes
 {
 
-	bool IsEdge;
-	BoundryType BoundryType;
-	Vertex* Start;
-	Vertex* End;
-
-	Line(Vertex * Start, Vertex* End, bool IsEdge) : IsEdge(IsEdge), Start(Start), End(End)
+	enum BoundryType
 	{
-		if (End->x > Start->x)
-		{
-			BoundryType = South;
-		}
-		else if (End->x < Start->x)         //Changed from the example
-		{
-			BoundryType = North;
-		}
-		else if (End->y > Start->y)
-		{
-			BoundryType = East;
-		}
-		else if (End->y < Start->y)
-		{
-			BoundryType = West;
-		}
-		
-	}
-};
+		East,
+		North,
+		South,
+		West
+	};
 
+	/**
+	*Vertex Struct
+	*/
+	struct Vertex
+	{
+		float x, y;
+	};
+	/*
+	*A line
+	*/
+	struct Line
+	{
+
+		bool IsEdge;
+		BoundryType BoundryType;
+		Vertex* Start;
+		Vertex* End;
+
+		Line(Vertex * Start, Vertex* End, bool IsEdge) : IsEdge(IsEdge), Start(Start), End(End)
+		{
+			if (End->x > Start->x)
+			{
+				BoundryType = South;
+			}
+			else if (End->x < Start->x)         //Changed from the example
+			{
+				BoundryType = North;
+			}
+			else if (End->y > Start->y)
+			{
+				BoundryType = East;
+			}
+			else if (End->y < Start->y)
+			{
+				BoundryType = West;
+			}
+
+		}
+	};
+}
 /**
  * Simple class that performs clipping
  *
@@ -68,7 +70,7 @@ struct Line
 class clipper {
 
 private:
-	void ClipSide(std::vector<Vertex>* outputVertexes, std::vector<Vertex> inputVertacies, Line* Edge);
+	void ClipSide(std::vector<EnumTypes::Vertex>* outputVertexes, std::vector<EnumTypes::Vertex> inputVertacies, EnumTypes::Line* Edge);
 	/*
 	*Creates a Clipping window
 	*Index 0 = Left
@@ -76,24 +78,24 @@ private:
 	*Index 2 = Right
 	*Index 3 = Bottom
 	*/
-	std::vector<Line*>* GenerateClipWindow(Vertex* BottomLeft, Vertex* TopRight);
+	std::vector<EnumTypes::Line*>* GenerateClipWindow(EnumTypes::Vertex* BottomLeft, EnumTypes::Vertex* TopRight);
 
 
 	/**
 	* Determines If a given vertex is inside of the given clipboundry
 	*/
-	bool Inside(Vertex testVertex, Line ClipBoundry);
+	bool Inside(EnumTypes::Vertex testVertex, EnumTypes::Line ClipBoundry);
 
 	//Intersection point is outptu tointersectPt
-	void Intersect(Line testLine, Line ClipBoundry, Vertex  *intersectPt);
+	void Intersect(EnumTypes::Line testLine, EnumTypes::Line ClipBoundry, EnumTypes::Vertex  *intersectPt);
 
 
-	void SwapOutputInput(std::vector<Vertex>* input, std::vector<Vertex>* output);
+	void SwapOutputInput(std::vector<EnumTypes::Vertex>* input, std::vector<EnumTypes::Vertex>* output);
 
-	void addVertexOutput(Vertex* newVertex, std::vector<Vertex>* outVertexArr);
+	void addVertexOutput(EnumTypes::Vertex* newVertex, std::vector<EnumTypes::Vertex>* outVertexArr);
 
 	//Keeps tracks of pointers to any Vertexes
-	std::vector<Vertex*>* dynamicVertexes;
+	std::vector<EnumTypes::Vertex*>* dynamicVertexes;
 public:
 
 

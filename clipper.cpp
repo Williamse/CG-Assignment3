@@ -34,17 +34,17 @@ clipper::clipper ()
 *	Index 2 = Right
 *	Index 3 = Bottom
 */
-std::vector<Line*>* clipper::GenerateClipWindow(Vertex* BottomLeft, Vertex* TopRight)
+std::vector<EnumTypes::Line*>* clipper::GenerateClipWindow(EnumTypes::Vertex* BottomLeft, EnumTypes::Vertex* TopRight)
 {
 	
-	std::vector<Line*>* ClipWindow = new std::vector<Line*>();
+	std::vector<EnumTypes::Line*>* ClipWindow = new std::vector<EnumTypes::Line*>();
 
 	//Generate missing vertexes
-	Vertex* TopLeft = new Vertex();
+	EnumTypes::Vertex* TopLeft = new EnumTypes::Vertex();
 	TopLeft->x = BottomLeft->x;
 	TopLeft->y = TopRight->y;
 
-	Vertex* BottomRight = new Vertex();
+	EnumTypes::Vertex* BottomRight = new EnumTypes::Vertex();
 	BottomRight->x = TopRight->x;
 	BottomRight->y = BottomLeft->y;
 
@@ -52,10 +52,10 @@ std::vector<Line*>* clipper::GenerateClipWindow(Vertex* BottomLeft, Vertex* TopR
 	dynamicVertexes->push_back(BottomRight);
 
 	//Genereate Line
-	Line* LeftLine = new Line(TopLeft,BottomLeft, true);
-	Line* RightLine = new Line(BottomRight, TopRight, true);
-	Line* BottomLine = new Line(BottomLeft, BottomRight, true);
-	Line* TopLine = new Line(TopRight, TopLeft, true);
+	EnumTypes::Line* LeftLine = new EnumTypes::Line(TopLeft, BottomLeft, true);
+	EnumTypes::Line* RightLine = new EnumTypes::Line(BottomRight, TopRight, true);
+	EnumTypes::Line* BottomLine = new EnumTypes::Line(BottomLeft, BottomRight, true);
+	EnumTypes::Line* TopLine = new EnumTypes::Line(TopRight, TopLeft, true);
 
 	//Add lines
 	ClipWindow->push_back(LeftLine);
@@ -75,21 +75,21 @@ std::vector<Line*>* clipper::GenerateClipWindow(Vertex* BottomLeft, Vertex* TopR
 * @return True If the test vertex is inside false otherwise
 *
 */
-bool clipper::Inside(Vertex testVertex, Line ClipBoundry)
+bool clipper::Inside(EnumTypes::Vertex testVertex, EnumTypes::Line ClipBoundry)
 {
-	if (ClipBoundry.BoundryType == South)
+	if (ClipBoundry.BoundryType == EnumTypes::South)
 	{
 		if (testVertex.y >= ClipBoundry.Start->y) return true;
 	}
-	if (ClipBoundry.BoundryType == North)
+	if (ClipBoundry.BoundryType == EnumTypes::North)
 	{
 		if (testVertex.y <= ClipBoundry.Start->y) return true;
 	}
-	if (ClipBoundry.BoundryType == East)
+	if (ClipBoundry.BoundryType == EnumTypes::East)
 	{
 		if (testVertex.x <= ClipBoundry.End->x) return true;
 	}
-	if (ClipBoundry.BoundryType == West)
+	if (ClipBoundry.BoundryType == EnumTypes::West)
 	{
 		if (testVertex.x >= ClipBoundry.End->x) return true;
 	}
@@ -125,15 +125,15 @@ int clipper::clipPolygon(int in, const float inx[], const float iny[],
 		float x0, float y0, float x1, float y1)
 {
 	//Holds all dynamic memory here
-	this->dynamicVertexes = new std::vector<Vertex*>();
+	this->dynamicVertexes = new std::vector<EnumTypes::Vertex*>();
 
-	std::vector<Line*>* ClippingWindow;
-	std::vector<Vertex> vertacies = std::vector<Vertex>();
-	std::vector<Vertex> outputVertacies = std::vector<Vertex>();
+	std::vector<EnumTypes::Line*>* ClippingWindow;
+	std::vector<EnumTypes::Vertex> vertacies = std::vector<EnumTypes::Vertex>();
+	std::vector<EnumTypes::Vertex> outputVertacies = std::vector<EnumTypes::Vertex>();
 
 	//Generate bottmleft and topright vertacies
-	Vertex BottomLeft = Vertex();
-	Vertex TopRight = Vertex();
+	EnumTypes::Vertex BottomLeft = EnumTypes::Vertex();
+	EnumTypes::Vertex TopRight = EnumTypes::Vertex();
 
 	BottomLeft.x = x0;
 	BottomLeft.y = y0;
@@ -144,7 +144,7 @@ int clipper::clipPolygon(int in, const float inx[], const float iny[],
 	for (int c = 0; c < in; c++)
 	{
 		//Create the vertex
-		Vertex *temp = new Vertex();
+		EnumTypes::Vertex *temp = new EnumTypes::Vertex();
 		temp->x = inx[c];
 		temp->y = iny[c];
 		
@@ -203,7 +203,7 @@ int clipper::clipPolygon(int in, const float inx[], const float iny[],
 /*
 * Adds the given vertex to the given Vertex Array
 */
-void clipper::addVertexOutput(Vertex* newVertex, std::vector<Vertex>* outVertexArr)
+void clipper::addVertexOutput(EnumTypes::Vertex* newVertex, std::vector<EnumTypes::Vertex>* outVertexArr)
 {
 	outVertexArr->push_back(*newVertex);
 }
@@ -211,7 +211,7 @@ void clipper::addVertexOutput(Vertex* newVertex, std::vector<Vertex>* outVertexA
 /*
 * Swap the input and output vectors unless we are dealing with a line
 */
-void clipper::SwapOutputInput(std::vector<Vertex>* input, std::vector<Vertex>* output)
+void clipper::SwapOutputInput(std::vector<EnumTypes::Vertex>* input, std::vector<EnumTypes::Vertex>* output)
 {
 	int input_length = input->size();
 	int output_length = output->size();
@@ -247,7 +247,7 @@ void clipper::SwapOutputInput(std::vector<Vertex>* input, std::vector<Vertex>* o
 * ClipBoundry - The line that intersects the test line
   intersectPt - Pointer where the result of the intersection should go.
 */
-void clipper::Intersect(Line testLine, Line ClipBoundry,Vertex  *intersectPt)
+void clipper::Intersect(EnumTypes::Line testLine, EnumTypes::Line ClipBoundry, EnumTypes::Vertex  *intersectPt)
 {
 	//Horizontal Edge
 	if (ClipBoundry.Start->y == ClipBoundry.End->y)     
@@ -272,10 +272,10 @@ void clipper::Intersect(Line testLine, Line ClipBoundry,Vertex  *intersectPt)
   inputVertacies - The vertacies passed into the algorithim
   Edge - The edge we are clipping on
 */
-void clipper::ClipSide(std::vector<Vertex>* outputVertexes, std::vector<Vertex> inputVertacies, Line* Edge)
+void clipper::ClipSide(std::vector<EnumTypes::Vertex>* outputVertexes, std::vector<EnumTypes::Vertex> inputVertacies, EnumTypes::Line* Edge)
 {
 	//Each interation update the start vertex, end, and intersection of the given bvetacie and the edge
-	Vertex start, end, intersection;
+	EnumTypes::Vertex start, end, intersection;
 
 	//Get the last vertacie
 	if (inputVertacies.size() != 0)
@@ -297,7 +297,7 @@ void clipper::ClipSide(std::vector<Vertex>* outputVertexes, std::vector<Vertex> 
 			}
 			else
 			{
-				Line *tLine = new Line(&start, &end, true);
+				EnumTypes::Line *tLine = new EnumTypes::Line(&start, &end, true);
 				Intersect(*tLine, *Edge, &intersection);
 				delete tLine;
 				addVertexOutput(&intersection, outputVertexes);
@@ -308,7 +308,7 @@ void clipper::ClipSide(std::vector<Vertex>* outputVertexes, std::vector<Vertex> 
 		{
 			if (Inside(start, *Edge))
 			{
-				Line *tLine = new Line(&start, &end, true);
+				EnumTypes::Line *tLine = new EnumTypes::Line(&start, &end, true);
 				Intersect(*tLine, *Edge, &intersection);
 				delete tLine;
 				addVertexOutput(&intersection, outputVertexes);
