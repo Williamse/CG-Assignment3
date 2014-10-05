@@ -8,7 +8,6 @@
 //Modified By Emanuel Williams - For Computer graphics 
 
 #include "clipper.h"
-#include <iostream>
 
 /**
  * Simple class that performs clipping
